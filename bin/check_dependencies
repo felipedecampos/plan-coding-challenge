@@ -1,0 +1,42 @@
+#!/bin/sh
+
+# check docker installation
+check_docker_status() {
+    # check if docker is installed on local machine
+    if [ "x$(which docker)" == "x" ]; then
+        printf "\nDocker not found on local machine.\n"
+        printf "Docker is required to run the project\n"
+        printf "https://docs.docker.com/engine/install/\n"
+        exit 1
+    fi
+
+    # check the communication with docker
+    docker info > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        printf "\nUnable to establish communication with Docker.\n"
+        printf "\Please, check if Docker is running on local machine and try again.\n"
+        exit 1
+    fi
+}
+
+# Função que verifica a instalação da biblioteca jq na máquina local
+# check composer installation
+check_composer_status() {
+    # check if composer is installed on local machine
+    if [ "x$(which composer)" == "x" ]; then
+        printf "\nComposer not found on local machine.\n"
+        printf "Composer is required to run the project\n"
+        printf "https://getcomposer.org/doc/00-intro.md#installation-linux-unix-macos\n"
+        exit 1
+    fi
+}
+
+# check dependencies
+check_dependencies() {
+    check_docker_status
+    check_composer_status
+}
+
+check_dependencies
+
+printf "\nDependencies to run the project is set up\n\n"
