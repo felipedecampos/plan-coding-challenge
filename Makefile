@@ -6,7 +6,6 @@ local/setup:
 local/install:
 	./vendor/bin/sail php artisan key:generate
 	./vendor/bin/sail php artisan migrate
-	./vendor/bin/sail php artisan db:seed
 
 local/test:
 	./vendor/bin/sail test
