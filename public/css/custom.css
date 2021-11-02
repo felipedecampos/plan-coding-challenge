@@ -1,0 +1,38 @@
+#box-tic-tac-toe-store-form {
+    background-color: blueviolet;
+}
+
+.table-tictactoe tr td {
+    font-size: 3rem;
+    font-weight: 900;
+    padding: 0.5em;
+}
+
+.table-tictactoe tr:not(:last-child) {
+    border-bottom: 3px solid #000000 !important;
+}
+
+.table-tictactoe tr td:not(:last-child) {
+    border-right: 3px solid #000000 !important;
+}
+
+.tictactoe-play-button {
+    padding: 1.2em;
+}
+
+.highlight-diagonal-cross {
+    background: linear-gradient(to top right, #fff calc(50% - 1px), black, #fff calc(50% + 1px));
+}
+
+.highlight-diagonal-cross-inverse {
+    background: linear-gradient(to bottom right, #fff calc(50% - 1px), black, #fff calc(50% + 1px));
+}
+
+.highlight-vertical-cross {
+    background: linear-gradient(to right, #fff calc(50% - 1px), black, #fff calc(50% + 1px));
+}
+
+.highlight-horizontal-cross {
+    background: linear-gradient(to bottom, #fff calc(50% - 1px), black, #fff calc(50% + 1px));
+}
+

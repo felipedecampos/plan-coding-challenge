@@ -14,7 +14,7 @@ class CreateGameMatchesTable extends Migration
     public function up()
     {
         Schema::create('game_matches', function (Blueprint $table) {
-            $table->unsignedBigInteger();
+            $table->bigIncrements('id')->unsigned();
             $table->unsignedBigInteger('game_id', false);
             $table->foreign('game_id')
                 ->references('id')
@@ -24,7 +24,7 @@ class CreateGameMatchesTable extends Migration
             $table->foreign('player_id_starts')
                 ->references('id')
                 ->on('players');
-            $table->boolean('match_ends')->nullable();
+            $table->boolean('game_match_ends')->default(false);
             $table->unsignedBigInteger('winner_player_id', false)
                 ->nullable();
             $table->foreign('winner_player_id')

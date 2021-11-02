@@ -14,7 +14,7 @@ class CreateGamesTable extends Migration
     public function up()
     {
         Schema::create('games', function (Blueprint $table) {
-            $table->unsignedBigInteger();
+            $table->bigIncrements('id')->unsigned();
             $table->unsignedBigInteger('player_one_id', false);
             $table->foreign('player_one_id')
                 ->references('id')

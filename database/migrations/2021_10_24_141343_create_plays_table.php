@@ -14,11 +14,11 @@ class CreatePlaysTable extends Migration
     public function up()
     {
         Schema::create('plays', function (Blueprint $table) {
-            $table->unsignedBigInteger();
-                $table->unsignedBigInteger('match_id', false);
-            $table->foreign('match_id')
+            $table->bigIncrements('id')->unsigned();
+            $table->unsignedBigInteger('game_match_id', false);
+            $table->foreign('game_match_id')
                 ->references('id')
-                ->on('matches');
+                ->on('game_matches');
             $table->unsignedBigInteger('player_id', false);
             $table->foreign('player_id')
                 ->references('id')
@@ -35,7 +35,7 @@ class CreatePlaysTable extends Migration
                 'bottom-right'
             ]);
             $table->smallInteger('play');
-            $table->unique(['match_id', 'position']);
+            $table->unique(['game_match_id', 'position']);
             $table->timestamps();
             $table->softDeletes();
         });
