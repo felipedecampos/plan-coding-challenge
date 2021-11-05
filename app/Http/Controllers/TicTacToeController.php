@@ -5,31 +5,30 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GameStoreRequest;
+use App\Repositories\GameHistoryRepository;
 use App\TicTacToe\Game;
 use App\TicTacToe\Play;
 use App\TicTacToe\SetUp;
 use Exception;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\DatabaseManager;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Throwable;
 
 class TicTacToeController extends Controller
 {
     /**
-     * @var DatabaseManager
+     * @var GameHistoryRepository
      */
-    protected DatabaseManager $db;
+    protected GameHistoryRepository $gameHistoryRepository;
 
     /**
-     * @param DatabaseManager $db
+     * @param GameHistoryRepository $gameHistoryRepository
      */
-    public function __construct(DatabaseManager $db)
+    public function __construct(GameHistoryRepository $gameHistoryRepository)
     {
-        $this->db = $db;
+        $this->gameHistoryRepository = $gameHistoryRepository;
     }
 
     /**
@@ -45,21 +44,6 @@ class TicTacToeController extends Controller
         session()->put('game', $game);
         session()->put('player_symbol_one', $playerSymbolOne);
         session()->put('player_symbol_two', $playerSymbolTwo);
-
-    }
-
-    /**
-     * @return void
-     * @throws Exception
-     */
-    private function restartGame(): void
-    {
-        if (! session()->has('player_symbol_one') || ! session()->has('player_symbol_two'))
-        {
-            throw new Exception('player symbols not found to restart the game.');
-        }
-
-        $this->initGame(session()->get('player_symbol_one'), session()->get('player_symbol_two'));
     }
 
     /**
@@ -76,8 +60,7 @@ class TicTacToeController extends Controller
      */
     private function getCurrentGame(): Game
     {
-        if (! $this->hasGame())
-        {
+        if (!$this->hasGame()) {
             throw new Exception('game not found');
         }
 
@@ -87,22 +70,82 @@ class TicTacToeController extends Controller
     /**
      * @return void
      */
-    private function endCurrentGame(): void
+    private function destroyGame(): void
     {
-        session()->forget('game');
+        session()->flush();
+        session()->regenerate();
     }
 
     /**
      * @return void
      */
-    private function destroyGame(): void
+    private function endCurrentGame(): void
     {
-        session()->flush();
+        session()->forget('game');
+        session()->forget('game_id');
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    private function restartGame(): void
+    {
+        if (!session()->has('player_symbol_one') || !session()->has('player_symbol_two')) {
+            throw new Exception('player symbols not found to restart the game.');
+        }
+
+        $this->initGame(session()->get('player_symbol_one'), session()->get('player_symbol_two'));
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    private function saveCurrentGame(): void
+    {
+        if (!$this->hasGame()) {
+            throw new Exception('game not found to save.');
+        }
+
+        $gameHistory = $this->gameHistoryRepository->createGame([
+            'session_id' => session()->getId(),
+            'game' => serialize(session()->get('game')),
+        ]);
+
+        session()->put('game_id', $gameHistory->getAttribute('id'));
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    private function updateCurrentGame(): void
+    {
+        if (!$this->hasGame() || !session()->has('game_id')) {
+            throw new Exception('game not found to update.');
+        }
+
+        $this->gameHistoryRepository->update(session()->get('game_id'), [
+            'session_id' => session()->getId(),
+            'game' => serialize(session()->get('game')),
+        ]);
+    }
+
+    /**
+     * @param string $sessionId
+     * @param int|bool $take
+     * @param bool $paginate
+     * @return Paginator|Collection
+     */
+    protected function getGameHistory(string $sessionId, int|bool $take = false, bool $paginate = false): Paginator|Collection
+    {
+        return $this->gameHistoryRepository->getGameBySessionId($sessionId, $take, $paginate);
     }
 
     /**
      * @return RedirectResponse|View
-     * @throws Throwable
+     * @throws Exception
      */
     public function index(): RedirectResponse|View
     {
@@ -117,55 +160,39 @@ class TicTacToeController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
      * @param GameStoreRequest $request
      * @return RedirectResponse
-     * @throws Throwable
+     * @throws Exception
      */
     public function store(GameStoreRequest $request): RedirectResponse
     {
-        try {
-            // $this->db->beginTransaction();
-
-            if (! $request->has('player_symbol_one') || ! $request->has('player_symbol_two'))
-            {
-                throw new Exception('player symbols not found to restart the game.');
-            }
-
-            $this->initGame($request->get('player_symbol_one'), $request->get('player_symbol_two'));
-
-            // $this->db->commit();
-        } catch (Throwable $e) {
-            // $this->db->rollBack();
-
-            throw $e;
+        if (!$request->has('player_symbol_one') || !$request->has('player_symbol_two')) {
+            throw new Exception('player symbols not found to start the game.');
         }
+
+        $this->initGame($request->get('player_symbol_one'), $request->get('player_symbol_two'));
 
         return redirect()->route('tictactoe.board');
     }
 
     /**
-     * Display the specified resource.
-     *
      * @return RedirectResponse|View
      * @throws Exception
      */
     public function board(): RedirectResponse|View
     {
-        if (! $this->hasGame()) {
+        if (!$this->hasGame()) {
             return redirect()->route('tictactoe.index');
         }
 
-        if ($this->getCurrentGame()->gameEnds())
-        {
+        if ($this->getCurrentGame()->gameEnds()) {
             $notifications = [
                 [
                     'type' => $this->getCurrentGame()->gameTied()
                         ? 'warning'
                         : 'success',
                     'head' => $this->getCurrentGame()->gameTied()
-                        ? 'Game was tied'
+                        ? 'Game is tied'
                         : 'Game has a winner',
                     'messages' => $this->getCurrentGame()->gameTied()
                         ? [
@@ -186,7 +213,10 @@ class TicTacToeController extends Controller
             ];
         }
 
-        return view('game')->with(['notifications' => $notifications ?? null]);
+        return view('game')->with([
+            'notifications' => $notifications ?? null,
+            'gameHistories' => $this->getGameHistory(session()->getId(), 5)
+        ]);
     }
 
     /**
@@ -196,71 +226,53 @@ class TicTacToeController extends Controller
      */
     public function play(Request $request): RedirectResponse
     {
-        try {
-            $play = new Play(
-                $request->has('position') ? $request->get('position') : null,
-                $request->has('player-symbol') ? $request->get('player-symbol') : null,
-                $request->has('current-play-order') ? (int) $request->get('current-play-order') : null,
-            );
+        $play = new Play(
+            $request->has('position') ? $request->get('position') : null,
+            $request->has('player-symbol') ? $request->get('player-symbol') : null,
+            $request->has('current-play-order') ? (int)$request->get('current-play-order') : null,
+        );
 
-            $this->getCurrentGame()->play($play);
-        } catch (Throwable $e) {
-            // $this->db->rollBack();
+        $this->getCurrentGame()->play($play);
 
-            throw $e;
+        if ($this->getCurrentGame()->gameEnds()) {
+            $this->saveCurrentGame();
         }
 
         return redirect()->route('tictactoe.board');
     }
 
     /**
+     * @param Request $request
      * @return RedirectResponse
-     * @throws Throwable
+     * @throws Exception
      */
     public function finish(Request $request): RedirectResponse
     {
-        try {
-            if (!$request->has('tictactoe-finish-input') || !$request->isMethod('post')) {
-                throw new Exception('finish action not allowed.');
-            }
-            // $this->db->beginTransaction();
+        if (!$request->has('tictactoe-finish-input')) {
+            throw new Exception('finish action not allowed.');
+        }
 
-            if ($request->get('tictactoe-finish-input') === '1') {
-                $this->destroyGame();
-
-                // $this->db->commit();
-            }
-        } catch (Throwable $e) {
-            // $this->db->rollBack();
-
-            throw $e;
+        if ($request->get('tictactoe-finish-input') === '1') {
+            $this->destroyGame();
         }
 
         return redirect()->route('tictactoe.index');
     }
 
     /**
+     * @param Request $request
      * @return RedirectResponse
-     * @throws Throwable
+     * @throws Exception
      */
     public function restart(Request $request): RedirectResponse
     {
-        try {
-            if (!$request->has('tictactoe-restart-input') || !$request->isMethod('post')) {
-                throw new Exception('restart action not allowed.');
-            }
-            // $this->db->beginTransaction();
+        if (!$request->has('tictactoe-restart-input')) {
+            throw new Exception('restart action not allowed.');
+        }
 
-            if ($request->get('tictactoe-restart-input') === '1') {
-                $this->endCurrentGame();
-                $this->restartGame();
-
-                // $this->db->commit();
-            }
-        } catch (Throwable $e) {
-            // $this->db->rollBack();
-
-            throw $e;
+        if ($request->get('tictactoe-restart-input') === '1') {
+            $this->endCurrentGame();
+            $this->restartGame();
         }
 
         return redirect()->route('tictactoe.board');

@@ -28,10 +28,10 @@
     background: linear-gradient(to bottom right, #fff calc(50% - 1px), black, #fff calc(50% + 1px));
 }
 
-.highlight-vertical-cross {
+*[class*="highlight-vertical-cross"] {
     background: linear-gradient(to right, #fff calc(50% - 1px), black, #fff calc(50% + 1px));
 }
 
-.highlight-horizontal-cross {
+*[class*="highlight-horizontal-cross"] {
     background: linear-gradient(to bottom, #fff calc(50% - 1px), black, #fff calc(50% + 1px));
 }

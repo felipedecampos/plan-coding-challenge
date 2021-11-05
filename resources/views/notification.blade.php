@@ -3,6 +3,11 @@
     @forelse ($notifications as $notification)
         <div role="alert" @class([
             'alert',
+            'alert-dismissible',
+            'fade',
+            'show',
+            'shadow',
+            'sm:rounded-lg',
             'alert-primary' => ($notification['type'] ?? '') === 'primary',
             'alert-secondary' => in_array(($notification['type'] ?? ''), ['secondary', ''], true),
             'alert-warning' => ($notification['type'] ?? '') === 'warning',
@@ -10,11 +15,6 @@
             'alert-danger' => ($notification['type'] ?? '') === 'danger',
             'alert-info' => ($notification['type'] ?? '') === 'info',
             'alert-light' => ($notification['type'] ?? '') === 'light',
-            'alert-dismissible',
-            'fade',
-            'show',
-            'shadow',
-            'sm:rounded-lg',
         ])>
             @isset($notification['head'])
                 <h4 class="alert-heading">{{ $notification['head'] }}</h4>
@@ -27,8 +27,8 @@
                 @endforelse
             </ul>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-                </button>
+                <span aria-hidden="true">x</span>
+            </button>
         </div>
     @empty
         <div role="alert" class="alert alert-secondary alert-dismissible fade show">

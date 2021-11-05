@@ -1,19 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Play extends Model
+class GameHistory extends Model
 {
     use HasFactory, SoftDeletes;
 
     /**
      * @var string
      */
-    protected $table = 'plays';
+    protected $table = 'game_histories';
+
+    /**
+     * @var string[]
+     */
+    protected $guarded = [
+        'id'
+    ];
 
     /**
      * @var string
@@ -23,14 +32,12 @@ class Play extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var string[]
      */
     protected $fillable = [
         'id',
-        'match_id',
-        'player_id',
-        'position',
-        'play',
+        'session_id',
+        'game',
         'created_at',
         'updated_at',
         'deleted_at'
@@ -39,21 +46,19 @@ class Play extends Model
     /**
      * The attributes that should be hidden for arrays.
      *
-     * @var array
+     * @var string[]
      */
     protected $hidden = [];
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var string[]
      */
     protected $visible = [
         'id',
-        'match_id',
-        'player_id',
-        'position',
-        'play',
+        'session_id',
+        'game',
         'created_at',
         'updated_at',
         'deleted_at'
@@ -62,11 +67,16 @@ class Play extends Model
     /**
      * The attributes that should be cast to native types.
      *
-     * @var array
+     * @var string[]
      */
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime'
     ];
+
+    public function getGameAttribute($value)
+    {
+        return unserialize($value);
+    }
 }

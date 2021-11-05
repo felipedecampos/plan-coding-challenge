@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePlayersTable extends Migration
+class CreateGameHistoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +15,10 @@ class CreatePlayersTable extends Migration
      */
     public function up()
     {
-        Schema::create('players', function (Blueprint $table) {
+        Schema::create('game_histories', function (Blueprint $table) {
             $table->bigIncrements('id')->unsigned();
-            $table->string('nickname', 255)->unique();
+            $table->string('session_id', 255);
+            $table->longText('game');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -28,6 +31,6 @@ class CreatePlayersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('players');
+        Schema::dropIfExists('game_histories');
     }
 }
