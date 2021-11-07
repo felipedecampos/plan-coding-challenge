@@ -16,7 +16,10 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active d-none d-sm-block">
+                <li @class([
+                'nav-item',
+                'active' => Request::segment(1) === 'board'
+                ])>
                     <a
                         class="nav-link"
                         href="{{ route('tictactoe.board') }}"
@@ -24,8 +27,11 @@
                         Game board
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link disabled" href="#">Game history</a>
+                <li @class([
+                    'nav-item',
+                    'active' => Request::segment(1) === 'history'
+                ])>
+                    <a class="nav-link" href="{{ route('tictactoe.history') }}">Game history</a>
                 </li>
             </ul>
 

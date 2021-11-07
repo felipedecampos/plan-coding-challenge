@@ -49,7 +49,8 @@ class Play extends SetUp
      * @return void
      * @throws Exception
      */
-    public function checkPlayerSymbolAllowedToPlay(string $playerSymbolAllowed): void {
+    public function checkPlayerSymbolAllowedToPlay(string $playerSymbolAllowed): void
+    {
         if ($this->playerSymbol !== $playerSymbolAllowed) {
             throw new Exception(
                 sprintf(

@@ -33,3 +33,6 @@ Route::post('/restart', [TicTacToeController::class, 'restart'])
 
 Route::post('/finish', [TicTacToeController::class, 'finish'])
     ->name('tictactoe.finish');
+
+Route::get('/history', [TicTacToeController::class, 'history'])
+    ->name('tictactoe.history');

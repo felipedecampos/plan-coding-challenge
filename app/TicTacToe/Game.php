@@ -86,8 +86,11 @@ class Game extends SetUp
      * @param string $playerSymbolAllowedToPlay
      * @throws Exception
      */
-    public function __construct(string $playerSymbolOne, string $playerSymbolTwo, string $playerSymbolAllowedToPlay = "")
-    {
+    public function __construct(
+        string $playerSymbolOne,
+        string $playerSymbolTwo,
+        string $playerSymbolAllowedToPlay = ""
+    ) {
         $this->board           = new Board();
         $this->playerSymbolOne = $playerSymbolOne;
         $this->playerSymbolTwo = $playerSymbolTwo;
@@ -263,8 +266,7 @@ class Game extends SetUp
      */
     public function hasPositionInWinnerLine(int $row, int $col): string
     {
-        if (count($this->getWinnerLine()) > 1)
-        {
+        if (count($this->getWinnerLine()) > 1) {
             throw new Exception('winner line exceeds the limit');
         }
 
@@ -287,13 +289,11 @@ class Game extends SetUp
      */
     private function checkAvailabilityToPlay(Play $play): void
     {
-        if ($this->gameEnds())
-        {
+        if ($this->gameEnds()) {
             throw new Exception('play not allowed, there is no availability to play');
         }
 
-        if (!$this->board->checkPositionAvailability($play->position))
-        {
+        if (!$this->board->checkPositionAvailability($play->position)) {
             throw new Exception(sprintf('position not available to play: %s.', $play->position));
         }
     }
@@ -361,7 +361,7 @@ class Game extends SetUp
     public function fillBoardWithPlays(Collection $plays): array
     {
         $playHistory = $plays
-            ->transform(function(array $play) {
+            ->transform(function (array $play) {
                 [$position, $playerSymbol, $playOrder] = $play;
                 return new Play($position, $playerSymbol, $playOrder);
             })

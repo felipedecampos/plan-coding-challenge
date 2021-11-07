@@ -8,6 +8,7 @@ use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\CursorPaginator;
 
 class BaseRepository
 {
@@ -31,16 +32,19 @@ class BaseRepository
      * @param int $take
      * @param bool $paginate
      *
-     * @return Collection|Paginator
+     * @return Collection|Paginator|CursorPaginator
      */
-    protected function doQuery(Builder $query = null, int $take = 15, bool $paginate = true): Collection|Paginator
-    {
+    protected function doQuery(
+        Builder $query = null,
+        int $take = 10,
+        bool $paginate = true
+    ): Collection|Paginator|CursorPaginator {
         if (is_null($query)) {
             $query = $this->newQuery();
         }
 
         if (true === $paginate) {
-            return $query->simplePaginate($take);
+            return $query->cursorPaginate($take);
         }
 
         if ($take > 0 || false !== $take) {

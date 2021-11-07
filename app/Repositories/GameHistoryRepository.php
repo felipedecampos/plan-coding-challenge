@@ -8,6 +8,7 @@ use App\Models\GameHistory;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\CursorPaginator;
 
 class GameHistoryRepository extends BaseRepository
 {
@@ -33,14 +34,13 @@ class GameHistoryRepository extends BaseRepository
      * @param string $sessionId
      * @param int|bool $take
      * @param bool $paginate
-     * @return Paginator|Collection
+     * @return Paginator|Collection|CursorPaginator
      */
     public function getGameBySessionId(
         string $sessionId,
         int|bool $take = false,
         bool $paginate = false
-    ): Paginator|Collection
-    {
+    ): Paginator|Collection|CursorPaginator {
         $query = $this->newQuery()->where('session_id', '=', $sessionId)->orderByDesc('id');
 
         return $this->doQuery($query, $take, $paginate);

@@ -58,15 +58,15 @@ class Board extends SetUp
             for ($col = 0; $col < self::COLS_LIMIT; $col++) {
                 $board [$row][$col] = null;
 
-                $rowLines ['highlight-horizontal-cross-' . $row][]= [$row, $col];
-                $colLines ['highlight-vertical-cross-' . $col][]= [$row, $col];
+                $rowLines ['highlight-horizontal-cross-' . $row][] = [$row, $col];
+                $colLines ['highlight-vertical-cross-' . $col][] = [$row, $col];
 
                 if ($row === $col) {
-                    $lDiagLines ['highlight-diagonal-cross'][]= [$row, $col];
+                    $lDiagLines ['highlight-diagonal-cross'][] = [$row, $col];
                 }
 
-                if ($col === ((self::COLS_LIMIT-1)-$row)) {
-                    $rDiagLines ['highlight-diagonal-cross-inverse'][]= [$row, $col];
+                if ($col === ((self::COLS_LIMIT - 1) - $row)) {
+                    $rDiagLines ['highlight-diagonal-cross-inverse'][] = [$row, $col];
                 }
             }
         }
@@ -99,8 +99,7 @@ class Board extends SetUp
      */
     private function checkRowRange(int $row): void
     {
-        if (!in_array($row, range(0, self::ROWS_LIMIT), true))
-        {
+        if (!in_array($row, range(0, self::ROWS_LIMIT), true)) {
             throw new Exception(sprintf('row given mismatch the range of rows allowed: %d.', $row));
         }
     }
@@ -112,8 +111,7 @@ class Board extends SetUp
      */
     private function checkColRange(int $col): void
     {
-        if (!in_array($col, range(0, self::COLS_LIMIT), true))
-        {
+        if (!in_array($col, range(0, self::COLS_LIMIT), true)) {
             throw new Exception(sprintf('col given mismatch the range of cols allowed: %d.', $col));
         }
     }

@@ -15,6 +15,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\CursorPaginator;
 
 class TicTacToeController extends Controller
 {
@@ -136,10 +137,13 @@ class TicTacToeController extends Controller
      * @param string $sessionId
      * @param int|bool $take
      * @param bool $paginate
-     * @return Paginator|Collection
+     * @return Paginator|Collection|CursorPaginator
      */
-    protected function getGameHistory(string $sessionId, int|bool $take = false, bool $paginate = false): Paginator|Collection
-    {
+    protected function getGameHistory(
+        string $sessionId,
+        int|bool $take = false,
+        bool $paginate = false
+    ): Paginator|Collection|CursorPaginator {
         return $this->gameHistoryRepository->getGameBySessionId($sessionId, $take, $paginate);
     }
 
@@ -214,6 +218,7 @@ class TicTacToeController extends Controller
         }
 
         return view('game')->with([
+            'game' => $this->getCurrentGame(),
             'notifications' => $notifications ?? null,
             'gameHistories' => $this->getGameHistory(session()->getId(), 5)
         ]);
@@ -276,5 +281,21 @@ class TicTacToeController extends Controller
         }
 
         return redirect()->route('tictactoe.board');
+    }
+
+    /**
+     * @param Request $request
+     * @return View
+     * @throws Exception
+     */
+    public function history(Request $request): View
+    {
+        $histories = $this->getGameHistory(session()->getId(), 10, true);
+
+        return view('history')
+            ->with([
+                'game' => $this->getCurrentGame(),
+                'histories' => $histories
+            ]);
     }
 }

@@ -19,22 +19,9 @@ check_docker_status() {
     fi
 }
 
-# Função que verifica a instalação da biblioteca jq na máquina local
-# check composer installation
-check_composer_status() {
-    # check if composer is installed on local machine
-    if [ "x$(which composer)" == "x" ]; then
-        printf "\nComposer not found on local machine.\n"
-        printf "Composer is required to run the project\n"
-        printf "https://getcomposer.org/doc/00-intro.md#installation-linux-unix-macos\n"
-        exit 1
-    fi
-}
-
 # check dependencies
 check_dependencies() {
     check_docker_status
-    check_composer_status
 }
 
 check_dependencies

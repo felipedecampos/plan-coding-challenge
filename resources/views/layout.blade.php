@@ -397,11 +397,9 @@
         <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
     </head>
     <body>
-        @includeWhen(session()->has('game'), 'header')
+        @includeWhen(isset($game), 'header')
 
-        @isset($notifications)
-            @includeWhen(count($notifications), 'notification', ['notifications' => $notifications])
-        @endisset
+        @includeWhen(isset($notifications), 'notification')
 
         <section class="content">
             @yield('content')

@@ -9,7 +9,7 @@
                 <div class="row flex-nowrap align-items-center">
                     <div class="col py-3">
                         <div class="d-flex justify-content-center">
-                            @if(session()->has('game'))
+                            @isset($game)
                                 {{
                                     Form::open([
                                         'route' => 'tictactoe.play',
@@ -29,22 +29,22 @@
                                         {{
                                             Form::hidden(
                                                 'player-symbol',
-                                                session()->get('game')->getPlayerSymbolAllowedToPlay(),
+                                                $game->getPlayerSymbolAllowedToPlay(),
                                                 ['id' => 'player-symbol', 'class' => 'form-control']
                                             )
                                         }}
                                         {{
                                             Form::hidden(
                                                 'current-play-order',
-                                                session()->get('game')->getCurrentPlayOrder(),
+                                                $game->getCurrentPlayOrder(),
                                                 ['id' => 'current-play-order', 'class' => 'form-control']
                                             )
                                         }}
                                     </div>
 
-                                    @include('board', ['game' => session()->get('game')])
+                                    @includeWhen(isset($game), 'board')
                                 {{ Form::close() }}
-                            @endif
+                            @endisset
                         </div>
                     </div>
                     <div class="col-auto col-md-6 col-xl-4 px-sm-4 d-none d-sm-block">
@@ -53,7 +53,7 @@
                                 <span class="fs-5 d-none d-sm-inline font-weight-bold legend">Latest games</span>
                             </div>
 
-                            @includeWhen(isset($gameHistories), 'history')
+                            @includeWhen(isset($gameHistories), 'latest')
                         </div>
                     </div>
                 </div>

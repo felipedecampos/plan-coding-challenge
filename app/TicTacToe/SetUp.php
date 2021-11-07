@@ -82,8 +82,7 @@ abstract class SetUp
      */
     protected function checkBoardPosition(string $position): void
     {
-        if (!in_array($position, self::BOARD_POSITIONS, true))
-        {
+        if (!in_array($position, self::BOARD_POSITIONS, true)) {
             throw new Exception(sprintf('position not allowed to play: %s.', $position));
         }
     }

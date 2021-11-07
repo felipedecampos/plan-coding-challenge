@@ -40,6 +40,14 @@ make local/test
 
 When the tests end, the coverage folder will be created into [/tests/Reports/coverage](/tests/Reports/coverage)
 
+## PHP Standards Recommendations
+
+To validate the code for consistency with a coding standard (PSR-1 && PSR-12), go to the **project folder** and run:
+
+```shell
+make local/coding-style
+```
+
 ## Localhost
 
 To see the project running access the link bellow:

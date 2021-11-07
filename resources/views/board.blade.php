@@ -15,9 +15,7 @@
                                     {{
                                         $value ?? Form::button('&nbsp;', [
                                             'class' => 'btn tictactoe-play-button',
-                                            'onclick' => "document.getElementById('position').value = '"
-                                                .$game->board->getBoardNamedPosition($row, $col)
-                                                ."';document.getElementById('tictactoe-play').submit();"
+                                            'data-position' => $game->board->getBoardNamedPosition($row, $col),
                                         ])
                                     }}
                                 @endif
