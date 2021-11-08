@@ -12,19 +12,13 @@
 - [MySQL v8.0](https://dev.mysql.com/doc/relnotes/mysql/8.0/en/)
 - [TDD (Unit and Feature test)](https://phpunit.readthedocs.io/en/9.5/)
 
-## Environment
+## Environment / Setup
 
-First you will need to set up the environment
-
-Go to the **project folder** and run:
-
-```shell
-make local/setup
-```
-
-Then, you need to install the application dependencies:
+First you will need to set up the environment and install the application dependencies.
 
 **Warning: Make sure you have PHP 8 installed on your machine**
+
+Go to the **project folder** and run:
 
 ```shell
 make local/install
@@ -53,3 +47,14 @@ make local/coding-style
 To see the project running access the link bellow:
 
 [http://localhost:8086/](http://localhost:8086/)
+
+
+## Uninstall
+
+If you want to remove the application container, images, volumes and network from your machine.
+
+Go to the **project folder** and run:
+
+```shell
+make local/setup-down
+```
